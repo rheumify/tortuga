@@ -35,7 +35,7 @@
   a{color:inherit;text-decoration:none}
   ::selection{background:var(--coral);color:var(--ink)}
 
-  .wrap{max-width:1080px;margin:0 auto;padding:0 24px}
+  .wrap{max-width:1320px;margin:0 auto;padding:0 clamp(24px,4vw,56px)}
 
   .layout{display:flex}
   .content{flex:1;min-width:0}
@@ -156,6 +156,8 @@
   .section-kicker{font-family:var(--body);font-weight:800;letter-spacing:.2em;text-transform:uppercase;font-size:.72rem;color:var(--coral);display:block;margin-bottom:6px}
   .section-title{font-family:var(--display);font-weight:900;font-size:clamp(2rem,5vw,3.4rem);line-height:1;letter-spacing:-.02em;color:var(--cream)}
   .lede{font-family:var(--display);font-style:italic;font-size:clamp(1.05rem,2vw,1.35rem);max-width:62ch;margin-bottom:40px;color:var(--foam)}
+  .planet-sub{font-family:var(--display);font-weight:900;font-size:clamp(1.4rem,3vw,2rem);color:var(--sand);margin:46px 0 22px;letter-spacing:-.01em}
+  .planet-sub:first-of-type{margin-top:8px}
 
   .facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:20px}
   .fact{
@@ -190,6 +192,55 @@
   @media (prefers-reduced-motion:reduce){
     .swim,.flipper-f,.flipper-b,.bubble,.scroll-hint{animation:none}
   }
+
+  /* conservation status badges */
+  .status-badge{
+    display:inline-flex;align-items:center;gap:7px;
+    font-family:var(--body);font-weight:800;font-size:.66rem;
+    letter-spacing:.12em;text-transform:uppercase;
+    padding:6px 13px;border-radius:999px;margin-top:10px;
+    border:1.5px solid;
+  }
+  .status-badge .dot{width:8px;height:8px;border-radius:50%}
+  .status-safe{color:#8fe3b0;border-color:rgba(143,227,176,.4);background:rgba(95,167,125,.14)}
+  .status-safe .dot{background:#5fd98a}
+  .status-vuln{color:#f3d27a;border-color:rgba(243,210,122,.45);background:rgba(236,196,116,.14)}
+  .status-vuln .dot{background:#ecc474}
+  .status-endang{color:#f4a784;border-color:rgba(244,167,132,.5);background:rgba(240,138,93,.16)}
+  .status-endang .dot{background:#f08a5d}
+  .animal-head>div{display:flex;flex-direction:column;align-items:flex-start}
+
+  /* explore control bar */
+  .explore-bar{
+    background:linear-gradient(180deg,#083834 0%,#062b29 100%);
+    border-top:1.5px solid rgba(95,167,125,.22);
+    border-bottom:1.5px solid rgba(95,167,125,.22);
+    padding:26px 0;position:sticky;top:0;z-index:30;
+    backdrop-filter:blur(6px);
+  }
+  .explore-inner{display:flex;flex-wrap:wrap;gap:14px;align-items:center}
+  .search-box{position:relative;flex:1;min-width:200px}
+  .search-box input{
+    width:100%;font-family:var(--body);font-weight:600;font-size:.98rem;
+    color:var(--cream);background:rgba(4,21,20,.6);
+    border:1.5px solid rgba(95,167,125,.35);border-radius:14px;
+    padding:13px 16px 13px 44px;outline:none;transition:border-color .18s ease;
+  }
+  .search-box input::placeholder{color:rgba(191,227,214,.5)}
+  .search-box input:focus{border-color:var(--coral)}
+  .search-box .ico{position:absolute;left:15px;top:50%;transform:translateY(-50%);font-size:1.1rem;opacity:.7}
+  .chip{
+    font-family:var(--body);font-weight:800;font-size:.8rem;letter-spacing:.04em;
+    padding:11px 18px;border-radius:999px;cursor:pointer;
+    background:rgba(4,21,20,.5);color:var(--foam);
+    border:1.5px solid rgba(95,167,125,.3);transition:all .15s ease;white-space:nowrap;
+  }
+  .chip:hover{border-color:var(--moss);transform:translateY(-1px)}
+  .chip.active{background:var(--coral);color:var(--ink);border-color:var(--coral)}
+  .chip-random{background:var(--moss);color:var(--ink);border-color:var(--moss)}
+  .chip-random:hover{background:var(--foam);border-color:var(--foam)}
+  .no-results{text-align:center;padding:60px 0;color:var(--foam);font-family:var(--display);font-style:italic;font-size:1.3rem;display:none}
+  .band.hidden{display:none}
 </style>
 </head>
 <body>
@@ -203,6 +254,7 @@
     <div class="sidebar-sub">Field Guide</div>
     <a class="nav-link" data-target="hero"><span class="emoji">🌊</span> Home</a>
     <a class="nav-link" data-target="about"><span class="emoji">🐢</span> About Us</a>
+    <a class="nav-link" data-target="planet"><span class="emoji">🌍</span> Save the Planet</a>
     <div class="nav-label">Jump to an animal</div>
     <div id="navList"></div>
   </nav>
@@ -283,6 +335,61 @@
             <h3>No boring textbook energy</h3>
             <p>This isn't a homework assignment. It's a field guide built for curious people who want the fun, jaw-dropping, true stuff — bite-sized, honest, and a little bit chaotic. Pick an animal from the sidebar and dive in.</p>
           </article>
+        </div>
+      </div>
+    </section>
+
+    <div class="explore-bar" id="exploreBar">
+      <div class="wrap">
+        <div class="explore-inner">
+          <div class="search-box">
+            <span class="ico">🔍</span>
+            <input type="text" id="searchInput" placeholder="Search animals… (try 'ocean' or 'shark')" autocomplete="off">
+          </div>
+          <button class="chip active" data-filter="all">All</button>
+          <button class="chip" data-filter="Mammal">Mammals</button>
+          <button class="chip" data-filter="Bird">Birds</button>
+          <button class="chip" data-filter="ocean">Ocean</button>
+          <button class="chip" data-filter="other">Other</button>
+          <button class="chip chip-random" id="randomBtn">🎲 Surprise me</button>
+        </div>
+      </div>
+    </div>
+
+    <section class="band band-a" id="planet">
+      <svg class="band-scutes" preserveAspectRatio="xMidYMid slice" viewBox="0 0 800 800" aria-hidden="true"><rect width="800" height="800" fill="url(#scute)"/></svg>
+      <div class="wrap">
+        <div class="animal-head">
+          <span class="animal-emoji">🌍</span>
+          <div><span class="section-kicker">Field notes · Our one planet</span>
+          <h2 class="section-title">Save the Planet</h2></div>
+        </div>
+        <p class="lede">Every animal in this guide shares one home with us. The cool news: small things you do actually move the needle. Here's the real talk — no doom, just facts and moves you can pull off this week.</p>
+
+        <h3 class="planet-sub">🔥 Global warming &amp; the animals</h3>
+        <div class="facts">
+          <article class="fact"><svg class="hex" viewBox="0 0 100 100"><polygon points="50,3 93,27 93,73 50,97 7,73 7,27" fill="none" stroke="#5fa77d" stroke-width="4"/></svg><span class="tag">Melting ice</span><h3>Polar animals are losing the floor</h3><p>As the planet warms, sea ice melts earlier each year. Polar bears, penguins, seals and walruses use that ice to hunt, rest and raise babies — less ice means way less room to live.</p></article>
+          <article class="fact"><svg class="hex" viewBox="0 0 100 100"><polygon points="50,3 93,27 93,73 50,97 7,73 7,27" fill="none" stroke="#5fa77d" stroke-width="4"/></svg><span class="tag">Coral</span><h3>Hot water bleaches reefs</h3><p>When the ocean gets too warm, coral kicks out the tiny algae that feed it and turns ghostly white. Reefs are home to about 25% of ALL ocean species, so a bleached reef is like a whole apartment block going dark.</p></article>
+          <article class="fact"><svg class="hex" viewBox="0 0 100 100"><polygon points="50,3 93,27 93,73 50,97 7,73 7,27" fill="none" stroke="#5fa77d" stroke-width="4"/></svg><span class="tag">Turtles</span><h3>Heat is skewing sea turtle babies</h3><p>Remember how nest temperature picks a turtle's sex? Hotter sand makes mostly females. On some beaches it's now over 99% female hatchlings — which is a real problem for finding mates later.</p></article>
+          <article class="fact"><svg class="hex" viewBox="0 0 100 100"><polygon points="50,3 93,27 93,73 50,97 7,73 7,27" fill="none" stroke="#5fa77d" stroke-width="4"/></svg><span class="tag">Moving home</span><h3>Animals are packing up and leaving</h3><p>As habitats heat up, animals migrate to cooler areas or higher mountains to survive. Some can move fast enough — others run out of "up" or "north" and have nowhere left to go.</p></article>
+        </div>
+
+        <h3 class="planet-sub">🗑️ Plastic &amp; littering</h3>
+        <div class="facts">
+          <article class="fact"><svg class="hex" viewBox="0 0 100 100"><polygon points="50,3 93,27 93,73 50,97 7,73 7,27" fill="none" stroke="#5fa77d" stroke-width="4"/></svg><span class="tag">The mix-up</span><h3>Animals mistake trash for food</h3><p>Sea turtles see a floating plastic bag and think "jellyfish — yum." Birds feed bottle caps and bits of plastic to their chicks. It fills their stomachs with stuff they can't digest.</p></article>
+          <article class="fact"><svg class="hex" viewBox="0 0 100 100"><polygon points="50,3 93,27 93,73 50,97 7,73 7,27" fill="none" stroke="#5fa77d" stroke-width="4"/></svg><span class="tag">Forever trash</span><h3>Plastic basically never leaves</h3><p>A plastic bottle can take around 450 years to break down. It doesn't really vanish — it just shreds into tiny "microplastics" that end up in fish, water, and yep, even us.</p></article>
+          <article class="fact"><svg class="hex" viewBox="0 0 100 100"><polygon points="50,3 93,27 93,73 50,97 7,73 7,27" fill="none" stroke="#5fa77d" stroke-width="4"/></svg><span class="tag">Tangled</span><h3>Ghost gear &amp; six-pack rings</h3><p>Lost fishing nets and loose plastic rings trap seals, dolphins, turtles and fish, making it hard for them to swim, eat, or escape predators. Snipping plastic rings before tossing them genuinely helps.</p></article>
+          <article class="fact"><svg class="hex" viewBox="0 0 100 100"><polygon points="50,3 93,27 93,73 50,97 7,73 7,27" fill="none" stroke="#5fa77d" stroke-width="4"/></svg><span class="tag">Truckloads</span><h3>A garbage truck a minute</h3><p>Roughly one garbage truck's worth of plastic enters the ocean every single minute. Litter on a street near you can wash into a storm drain and end up in the sea — it's all connected.</p></article>
+        </div>
+
+        <h3 class="planet-sub">💪 What YOU can actually do</h3>
+        <div class="facts">
+          <article class="fact"><svg class="hex" viewBox="0 0 100 100"><polygon points="50,3 93,27 93,73 50,97 7,73 7,27" fill="none" stroke="#5fa77d" stroke-width="4"/></svg><span class="tag">Reusable</span><h3>Ditch single-use plastic</h3><p>Carry a refillable water bottle and reusable bag. One reusable bottle can replace hundreds of plastic ones a year. Easy win, low effort, big payoff.</p></article>
+          <article class="fact"><svg class="hex" viewBox="0 0 100 100"><polygon points="50,3 93,27 93,73 50,97 7,73 7,27" fill="none" stroke="#5fa77d" stroke-width="4"/></svg><span class="tag">Sort it</span><h3>Recycle right, not just often</h3><p>Rinse containers and check what your area actually accepts. Tossing dirty or wrong items in the recycling can ruin a whole batch — so doing it correctly matters more than doing a lot.</p></article>
+          <article class="fact"><svg class="hex" viewBox="0 0 100 100"><polygon points="50,3 93,27 93,73 50,97 7,73 7,27" fill="none" stroke="#5fa77d" stroke-width="4"/></svg><span class="tag">Cleanup</span><h3>Pick up 3 pieces of litter</h3><p>The "take 3 for the sea" idea: grab three pieces of trash whenever you leave a beach, park or trail. If everyone did it, that's millions of pieces gone. Group cleanups level it up.</p></article>
+          <article class="fact"><svg class="hex" viewBox="0 0 100 100"><polygon points="50,3 93,27 93,73 50,97 7,73 7,27" fill="none" stroke="#5fa77d" stroke-width="4"/></svg><span class="tag">Power down</span><h3>Save energy at home</h3><p>Lights off when you leave, unplug chargers, walk or bike for short trips. Less wasted energy means fewer emissions warming the planet — and a lower bill, which your parents will love.</p></article>
+          <article class="fact"><svg class="hex" viewBox="0 0 100 100"><polygon points="50,3 93,27 93,73 50,97 7,73 7,27" fill="none" stroke="#5fa77d" stroke-width="4"/></svg><span class="tag">Speak up</span><h3>Tell people what you learned</h3><p>The biggest move of all: share the facts. People protect what they understand. Show a friend the turtle fact, post it, talk about it — caring spreads faster than litter.</p></article>
+          <article class="fact"><svg class="hex" viewBox="0 0 100 100"><polygon points="50,3 93,27 93,73 50,97 7,73 7,27" fill="none" stroke="#5fa77d" stroke-width="4"/></svg><span class="tag">Backyard</span><h3>Make a tiny wild spot</h3><p>Plant a flower for the bees, leave out fresh water for birds, skip the bug spray on a corner of the yard. Little safe zones add up to a friendlier neighborhood for wildlife.</p></article>
         </div>
       </div>
     </section>
@@ -445,36 +552,367 @@ const ANIMALS=[
      {tag:'Endurance',h:'Marathon hunters',p:'Wolves can trot for hours and cover 50+ km a day, wearing prey down by stamina rather than pure speed.'},
      {tag:'Smell',h:'A nose 100x sharper than ours',p:'A wolf’s sense of smell is roughly 100 times stronger than a human’s, able to detect prey over 2 km away.'},
      {tag:'Ecosystem',h:'They reshape whole landscapes',p:'When wolves returned to Yellowstone, they changed deer behaviour, let forests regrow, and even shifted the paths of rivers.'}
+   ]},
+  {id:'chameleon',name:'Chameleon',emoji:'🦎',kicker:'Field notes · Reptile',
+   lede:"A slow-motion lizard with swiveling eyes, a tongue like a rocket, and a mood-ring body.",
+   facts:[
+     {tag:'Color',h:'It changes mood, not just camo',p:'Chameleons shift color mostly to show feelings and temperature — angry, calm, or flirting — by rearranging tiny crystals in their skin, not just to hide.'},
+     {tag:'Eyes',h:'Each eye looks a different way',p:'Their eyes rotate independently, giving a near-360° view, then both lock forward to judge distance right before a strike.'},
+     {tag:'Tongue',h:'A tongue twice its body length',p:'A chameleon’s tongue can shoot out longer than its whole body in a hundredth of a second to snatch a bug — faster than you can blink.'},
+     {tag:'Grip',h:'Built-in pliers feet',p:'Their toes are fused into two opposing bundles, like little tongs, perfect for gripping branches tightly.'},
+     {tag:'Tail',h:'A fifth hand',p:'That curled tail works like an extra limb, wrapping around branches for balance as they creep along.'},
+     {tag:'UV',h:'Some glow under UV light',p:'Certain chameleons have bones that glow blue under ultraviolet light, showing through their skin as little patterns.'}
+   ]},
+  {id:'dolphin',name:'Dolphin',emoji:'🐬',kicker:'Field notes · Marine mammal',
+   lede:"The ocean’s class clown and genius rolled into one — playful, chatty, and scary smart.",
+   facts:[
+     {tag:'Names',h:'They call each other by name',p:'Each dolphin invents a unique signature whistle as a baby and uses it like a name — and others will copy it to "call" that specific dolphin.'},
+     {tag:'Sonar',h:'Sees with sound',p:'Dolphins fire clicks and read the echoes to map their surroundings, spotting fish hidden in sand or murky water in total detail.'},
+     {tag:'Sleep',h:'Half the brain naps',p:'Dolphins sleep one brain hemisphere at a time, keeping one eye open so they never stop swimming or forget to surface for air.'},
+     {tag:'Play',h:'They surf and blow rings',p:'Dolphins ride boat waves for fun and blow underwater bubble rings, then play with them — proof they goof off just to enjoy it.'},
+     {tag:'Teamwork',h:'Group hunting tactics',p:'Some dolphins herd fish into tight balls or stir up mud rings to trap them, working together with planned roles.'},
+     {tag:'Smarts',h:'They recognize themselves',p:'Dolphins pass the mirror test, understanding that the reflection is them — a sign of self-awareness very few animals have.'}
+   ]},
+  {id:'frog',name:'Frog',emoji:'🐸',kicker:'Field notes · Amphibian',
+   lede:"A jumpy, slippery weirdo that drinks through its skin and started life as a tadpole with no legs.",
+   facts:[
+     {tag:'Drinking',h:'Drinks through its butt',p:'Frogs barely drink with their mouths — they absorb water through a patch of skin on their belly and backside called the "drinking patch."'},
+     {tag:'Eyes',h:'Eyes help them swallow',p:'A frog pulls its eyeballs down into its head to help push food down its throat when it swallows. Snack time is a whole event.'},
+     {tag:'Frozen',h:'Some freeze solid and live',p:'Wood frogs can freeze almost completely in winter — heart stopped, no breathing — then thaw out in spring and hop away fine.'},
+     {tag:'Skin',h:'They breathe through skin',p:'Frogs can take in oxygen straight through their moist skin, which is also why pollution in water hits them so hard.'},
+     {tag:'Jump',h:'Springs 20x their length',p:'Many frogs can leap more than 20 times their body length thanks to stretchy, energy-storing leg tendons.'},
+     {tag:'Toxins',h:'Tiny ones are deadly',p:'Some poison dart frogs the size of a paperclip carry enough toxin in their skin to be among the most poisonous animals alive.'}
+   ]},
+  {id:'hummingbird',name:'Hummingbird',emoji:'🐦',kicker:'Field notes · Bird',
+   lede:"A buzzing jewel that flies like a helicopter, eats like a furnace, and weighs less than a coin.",
+   facts:[
+     {tag:'Hover',h:'The only bird that flies backward',p:'Hummingbirds beat their wings in a figure-8, letting them hover in place and even fly backward — no other bird can do that.'},
+     {tag:'Heart',h:'1,200 beats a minute',p:'In flight a hummingbird’s heart can race past 1,200 beats per minute, and its wings can blur at up to 80 beats per second.'},
+     {tag:'Hunger',h:'Eats half its weight daily',p:'They burn energy so fast they must eat about every 10–15 minutes, visiting hundreds of flowers a day.'},
+     {tag:'Torpor',h:'Powers down at night',p:'To survive cold nights without starving, hummingbirds drop into torpor — slowing their heart and breathing to almost nothing.'},
+     {tag:'Memory',h:'Remembers every flower',p:'They memorize which flowers they’ve drained and how long each takes to refill — tiny brain, elite scheduling.'},
+     {tag:'Tiny',h:'Lighter than a penny',p:'The bee hummingbird, the smallest bird on Earth, weighs less than 2 grams — lighter than a single coin.'}
+   ]},
+  {id:'jellyfish',name:'Jellyfish',emoji:'🪼',kicker:'Field notes · Cnidarian',
+   lede:"A brainless, boneless, heartless blob that has been drifting the seas longer than almost anything alive.",
+   facts:[
+     {tag:'No brain',h:'No brain, heart, or bones',p:'A jellyfish has none of those — it’s about 95% water and senses the world through a simple net of nerves spread across its body.'},
+     {tag:'Ancient',h:'Older than dinosaurs by far',p:'Jellyfish have drifted the oceans for over 500 million years, long before trees, dinosaurs, or sharks existed.'},
+     {tag:'Immortal',h:'One can reset its age',p:'The "immortal jellyfish" can revert to its baby stage when hurt or old and start its life over, possibly forever.'},
+     {tag:'Sting',h:'Tiny harpoons in the tentacles',p:'Each tentacle is loaded with microscopic stinging capsules that fire like spring-loaded harpoons when touched.'},
+     {tag:'Glow',h:'Many make their own light',p:'Lots of jellyfish glow in the dark, and the protein behind it became a famous tool that lets scientists light up cells.'},
+     {tag:'Swarm',h:'They bloom by the millions',p:'When conditions are right, jellyfish multiply into huge "blooms" that can clog fishing nets and even power plant pipes.'}
+   ]},
+  {id:'koala',name:'Koala',emoji:'🐨',kicker:'Field notes · Marsupial',
+   lede:"A fuzzy, sleepy eucalyptus addict that hugs trees for a living and has fingerprints just like yours.",
+   facts:[
+     {tag:'Sleep',h:'Sleeps up to 22 hours',p:'Koalas snooze around 18–22 hours a day because their leafy diet gives so little energy they have to conserve every bit.'},
+     {tag:'Diet',h:'Eats poison for breakfast',p:'Eucalyptus leaves are toxic to most animals, but koalas have a special gut that breaks down the poison so they can live on them.'},
+     {tag:'Fingerprints',h:'Prints like a human’s',p:'Koala fingerprints are so similar to ours that they could in theory confuse a crime scene — wild for an animal so unrelated to us.'},
+     {tag:'Not a bear',h:'Actually a marsupial',p:'Despite the "koala bear" nickname, they’re marsupials — babies (joeys) grow in a pouch like kangaroos do.'},
+     {tag:'Water',h:'"Koala" means no drink',p:'They get most of their water from leaves and rarely drink, though in heatwaves they’ll come down for a sip.'},
+     {tag:'Hug',h:'Tree hugs cool them off',p:'Koalas press against tree trunks to dump body heat — the wood stays cooler than the air, so a hug is basically air conditioning.'}
+   ]},
+  {id:'owl',name:'Owl',emoji:'🦉',kicker:'Field notes · Bird',
+   lede:"The silent night hunter with a head that spins, ears that don’t line up, and zero chill about being stared at.",
+   facts:[
+     {tag:'Neck',h:'Spins its head 270°',p:'Owls can’t move their eyes, so they rotate their head about three-quarters of a full circle to look around — extra bones and blood tricks keep them from passing out.'},
+     {tag:'Silent',h:'Flies in total silence',p:'Special soft, fringed feathers break up the air so an owl’s wings make almost no sound, letting it ambush prey without warning.'},
+     {tag:'Ears',h:'Lopsided ears for 3D sound',p:'One ear sits higher than the other, so owls pinpoint exactly where a sound comes from — they can hunt by hearing alone in pitch dark.'},
+     {tag:'Eyes',h:'Eyes shaped like tubes',p:'Owl eyes aren’t round balls but long tubes locked in place, giving incredible night vision but forcing that famous head-swivel.'},
+     {tag:'Pellets',h:'They cough up bone bundles',p:'Owls swallow prey whole, then hack up tidy pellets of fur and bone — scientists dissect these to learn exactly what they ate.'},
+     {tag:'Group',h:'A flock is a "parliament"',p:'A group of owls is called a parliament, a nod to their old reputation as wise old judges of the forest.'}
+   ]},
+  {id:'shark',name:'Shark',emoji:'🦈',kicker:'Field notes · Fish',
+   lede:"The ocean’s oldest apex predator — a senses-maxed swimming machine that’s far cooler and less scary than movies claim.",
+   facts:[
+     {tag:'Ancient',h:'Older than trees',p:'Sharks have patrolled the oceans for over 400 million years — they existed before trees grew on land and survived several mass extinctions.'},
+     {tag:'Teeth',h:'Endless rows of teeth',p:'Sharks grow and lose teeth constantly, going through tens of thousands in a lifetime as new ones roll forward like a conveyor belt.'},
+     {tag:'Sense',h:'They detect electricity',p:'Special jelly-filled pores let sharks sense the tiny electric fields of hidden prey — they can find a fish buried in sand.'},
+     {tag:'No bones',h:'A skeleton of cartilage',p:'Sharks have no bones at all; their skeleton is made of flexible cartilage, the same stuff in your ears and nose, making them lighter and bendier.'},
+     {tag:'Skin',h:'Skin like sandpaper',p:'Shark skin is covered in tiny tooth-like scales that cut drag so well that engineers copy the pattern for fast swimsuits and planes.'},
+     {tag:'Chill',h:'Humans aren’t on the menu',p:'Despite their rep, sharks rarely bite people and usually let go fast — you’re far more likely to be hurt by almost anything else at the beach.'}
+   ]},
+  {id:'kangaroo',name:'Kangaroo',emoji:'🦘',kicker:'Field notes · Marsupial',
+   lede:"A bouncing Aussie heavyweight that can't walk backward and carries its baby in a built-in pocket.",
+   facts:[
+     {tag:'Hop',h:'Springs on stored energy',p:'Kangaroo legs work like pogo sticks — stretchy tendons store and release energy, so hopping fast actually costs them barely any extra effort.'},
+     {tag:'No reverse',h:'Can’t hop backward',p:'Their big feet and thick tail make going backward impossible, which is partly why a kangaroo and emu hold up Australia’s coat of arms — symbols of only moving forward.'},
+     {tag:'Pouch',h:'A baby the size of a jellybean',p:'A newborn joey is tinier than a grape and crawls into the pouch to keep growing for months before it ever peeks out.'},
+     {tag:'Tail',h:'A third leg',p:'A kangaroo uses its muscular tail like an extra limb to push itself along when walking slowly, almost like a fifth foot.'},
+     {tag:'Cool down',h:'Licks its arms to chill',p:'To beat the Outback heat, kangaroos lick their forearms — as the spit evaporates it cools the blood in the veins just under the skin.'},
+     {tag:'Boxing',h:'They actually box',p:'Male kangaroos spar by balancing on their tails and kicking with both powerful back legs — a real fight, not just for show.'}
+   ]},
+  {id:'tiger',name:'Tiger',emoji:'🐯',kicker:'Field notes · Mammal',
+   lede:"The biggest cat on Earth — a striped, swimming, solo hunter where no two coats are ever the same.",
+   facts:[
+     {tag:'Stripes',h:'Stripes are like fingerprints',p:'No two tigers share the same stripe pattern, and the stripes go all the way down to their skin — shave a tiger and the pattern is still there.'},
+     {tag:'Swim',h:'A cat that loves water',p:'Unlike most cats, tigers adore swimming and will happily cool off in rivers, even hunting prey in the water.'},
+     {tag:'Size',h:'The largest cat alive',p:'A Siberian tiger can weigh over 300 kg and stretch more than 3 metres including the tail — bigger than any lion.'},
+     {tag:'Night vision',h:'Sees 6x better in the dark',p:'Tiger eyes gather light far better than ours, giving them roughly six times sharper night vision for after-dark hunting.'},
+     {tag:'Roar',h:'A roar heard 3 km away',p:'A tiger’s roar can carry up to 3 kilometres, and low rumbles below it can even make a victim freeze in place.'},
+     {tag:'Solo',h:'Loners with big turf',p:'Tigers mostly live and hunt alone, patrolling huge territories they mark with scent to keep other tigers out.'}
+   ]},
+  {id:'bee',name:'Bee',emoji:'🐝',kicker:'Field notes · Insect',
+   lede:"A fuzzy little flying farmer that dances to give directions and keeps a huge chunk of our food on the menu.",
+   facts:[
+     {tag:'Dance',h:'They dance out a map',p:'A honeybee does a "waggle dance" to tell the hive exactly which direction and how far away the best flowers are. Tiny GPS, big wiggle.'},
+     {tag:'Food',h:'Behind 1 in 3 bites you eat',p:'Bees pollinate so many crops that roughly a third of the food we eat depends on them — no bees, no apples, almonds, or berries.'},
+     {tag:'Wings',h:'200 wingbeats a second',p:'That buzzing is their wings flapping around 200 times per second, which is also what makes the famous bee hum.'},
+     {tag:'Honey',h:'A lifetime makes a spoonful',p:'A single worker bee produces only about a twelfth of a teaspoon of honey in its whole life — the hive is pure teamwork.'},
+     {tag:'Eyes',h:'Five eyes and UV vision',p:'Bees have five eyes total and see ultraviolet patterns on flowers that act like glowing landing strips guiding them in.'},
+     {tag:'Queen',h:'One queen, thousands of kids',p:'A queen bee can lay up to 2,000 eggs a day — almost her own body weight — keeping the whole colony going.'}
+   ]},
+  {id:'platypus',name:'Platypus',emoji:'🦫',kicker:'Field notes · Monotreme',
+   lede:"A duck-billed, beaver-tailed, egg-laying mammal so weird scientists first thought it was a hoax.",
+   facts:[
+     {tag:'Mashup',h:'Looks stitched together',p:'A duck bill, webbed feet, a beaver tail, and fur — when the first specimen reached Europe, experts thought someone had sewn animals together as a prank.'},
+     {tag:'Eggs',h:'A mammal that lays eggs',p:'The platypus is one of only a few mammals on Earth that lay eggs instead of giving birth, then feeds milk that oozes through its skin.'},
+     {tag:'Venom',h:'Males have venom spurs',p:'Male platypuses have a spur on each back leg that delivers venom strong enough to cause a human serious pain — rare for a mammal.'},
+     {tag:'Electric',h:'Hunts with its bill',p:'It closes its eyes underwater and hunts by sensing the tiny electric signals of prey with its rubbery bill.'},
+     {tag:'Glow',h:'It glows under UV light',p:'Platypus fur glows a soft blue-green under ultraviolet light, and nobody is totally sure why yet.'},
+     {tag:'No stomach',h:'Basically no stomach',p:'The platypus has almost no real stomach — food passes straight into the gut, so it just eats a lot of small meals.'}
+   ]},
+  {id:'crocodile',name:'Crocodile',emoji:'🐊',kicker:'Field notes · Reptile',
+   lede:"A living dinosaur with the strongest bite ever measured, lurking in rivers basically unchanged for ages.",
+   facts:[
+     {tag:'Bite',h:'The strongest bite on record',p:'A saltwater croc can chomp down with more force than any other animal measured — yet the muscles to OPEN its jaws are so weak you could hold them shut by hand.'},
+     {tag:'Ancient',h:'Outlasted the dinosaurs',p:'Crocodiles have looked roughly the same for over 90 million years and lived right through the extinction that killed the dinosaurs.'},
+     {tag:'Tears',h:'Where "crocodile tears" come from',p:'Crocs really do leak fluid from their eyes while eating, which is where the saying for fake crying comes from — but it’s just plumbing, not feelings.'},
+     {tag:'Death roll',h:'The spinning takedown',p:'To tear food apart, a crocodile clamps on and spins its whole body in a violent "death roll," since it can’t chew.'},
+     {tag:'Cold blood',h:'Can go a year without food',p:'Being cold-blooded means they burn energy slowly — a big croc can survive up to a year between meals if it has to.'},
+     {tag:'Mom',h:'Surprisingly caring parents',p:'Mother crocs gently carry their hatchlings to the water in their huge mouths and guard them — tender, for an apex predator.'}
+   ]},
+  {id:'peacock',name:'Peacock',emoji:'🦚',kicker:'Field notes · Bird',
+   lede:"The flashiest bird at the party, fanning out a shimmering tail that's basically a living fireworks show.",
+   facts:[
+     {tag:'Name',h:'Only males are "peacocks"',p:'Technically only the males are peacocks; females are peahens, and together they’re peafowl. The dazzling tail belongs to the boys.'},
+     {tag:'Tail',h:'A tail longer than its body',p:'A peacock’s train can be over 1.5 metres long — more than half its total length — and it’s grown fresh and shed every year.'},
+     {tag:'Color',h:'The colors are a trick of light',p:'Those blues and greens aren’t pigment — microscopic structures in the feathers bend light, so the color shifts as the bird moves.'},
+     {tag:'Eyespots',h:'Hundreds of fake eyes',p:'The "eyes" on the tail are called ocelli, and peahens tend to pick mates with more and brighter eyespots.'},
+     {tag:'Rumble',h:'They "talk" in silent sound',p:'Peacocks shake their trains to make low rumbles humans can barely hear, sending hidden signals to nearby peahens.'},
+     {tag:'Fly',h:'Yes, they can fly',p:'Despite that huge tail, peacocks can fly short bursts and often roost up in trees at night to stay safe from predators.'}
+   ]},
+  {id:'seahorse',name:'Seahorse',emoji:'🐠',kicker:'Field notes · Fish',
+   lede:"A tiny armored fish that swims standing up, holds hands with its partner, and where DAD has the babies.",
+   facts:[
+     {tag:'Dads',h:'Males get pregnant',p:'The female puts her eggs into the male’s pouch, and HE carries and gives birth to hundreds of babies — the only animal where dad truly gets pregnant.'},
+     {tag:'Eyes',h:'Eyes that move alone',p:'Each eye swivels on its own, so a seahorse can watch for food in front and danger behind at the exact same time.'},
+     {tag:'Slow',h:'The slowest fish alive',p:'Seahorses are among the slowest swimmers in the ocean, fluttering a tiny back fin up to 50 times a second just to inch along.'},
+     {tag:'Grip',h:'A tail that anchors',p:'They wrap their curly tails around seagrass and coral to hold on so currents don’t sweep them away while they rest.'},
+     {tag:'No stomach',h:'They eat almost nonstop',p:'With no real stomach, food rushes through fast, so a seahorse has to snack constantly — up to 3,000 tiny shrimp a day.'},
+     {tag:'Love',h:'They pair up and "dance"',p:'Many seahorses bond with one partner and greet each other every morning with a twirling dance, sometimes linking tails.'}
+   ]},
+  {id:'bat',name:'Bat',emoji:'🦇',kicker:'Field notes · Mammal',
+   lede:"The only mammal that truly flies — a night-flying bug zapper that sees the world in sound.",
+   facts:[
+     {tag:'Flight',h:'The only flying mammal',p:'Plenty of animals glide, but bats are the one and only mammal that actually flies, with wings made of skin stretched over long finger bones.'},
+     {tag:'Sonar',h:'They see with echoes',p:'Most bats fire out clicks and listen to the echoes to map the dark, pinpointing a mosquito mid-air with incredible precision.'},
+     {tag:'Appetite',h:'Eat thousands of bugs a night',p:'A single small bat can gobble up to 1,000 mosquito-sized insects in an hour — nature’s free pest control.'},
+     {tag:'Upside down',h:'They hang to take off',p:'Bat leg bones are too thin to stand on, so they hang upside down — which also lets them just drop into flight instantly.'},
+     {tag:'Pollinate',h:'Some plant the rainforest',p:'Fruit bats spread seeds and pollinate plants like agave and banana, helping whole forests regrow as they fly.'},
+     {tag:'Long life',h:'Tiny but long-lived',p:'For their size bats live shockingly long — some small species survive 30+ years, far longer than similar-sized mice.'}
+   ]},
+  {id:'lion',name:'Lion',emoji:'🦁',kicker:'Field notes · Mammal',
+   lede:"The so-called king of beasts — a social cat that hunts as a team and sleeps most of the day away.",
+   facts:[
+     {tag:'Pride',h:'The only social big cat',p:'Lions are the only big cats that live in groups, called prides, where related females hunt and raise cubs together.'},
+     {tag:'Hunters',h:'The lionesses do the work',p:'Female lions do most of the hunting, often teaming up to surround prey, while the larger males defend the territory.'},
+     {tag:'Roar',h:'A roar heard from 8 km',p:'A lion’s roar is the loudest of any big cat and can be heard up to 8 kilometres away, telling rivals to back off.'},
+     {tag:'Lazy',h:'Sleeps up to 20 hours',p:'Lions conserve energy by resting up to 20 hours a day, doing their hunting in short bursts at dawn and dusk.'},
+     {tag:'Mane',h:'The mane shows off health',p:'A male’s mane signals his strength and age — darker, fuller manes tend to mean a tougher, healthier lion.'},
+     {tag:'Cubs',h:'Born with spots',p:'Lion cubs are born with faint leopard-like spots that fade as they grow, a leftover from their ancestors.'}
+   ]},
+  {id:'pufferfish',name:'Pufferfish',emoji:'🐡',kicker:'Field notes · Fish',
+   lede:"A slow, clumsy swimmer with a wild defense move and enough poison to make it the ocean's worst snack.",
+   facts:[
+     {tag:'Puff',h:'Balloons up to scare predators',p:'When threatened, a pufferfish gulps water and blows up into a spiky ball several times its size — way too big and pokey to swallow.'},
+     {tag:'Poison',h:'Among the most toxic animals',p:'Most pufferfish carry tetrodotoxin, a poison far deadlier than cyanide, with no known antidote — one fish can be lethal.'},
+     {tag:'Teeth',h:'Teeth that never stop growing',p:'Their four fused teeth keep growing forever, so they crunch hard shellfish and coral to wear them back down.'},
+     {tag:'Art',h:'Males build sand mandalas',p:'Some male pufferfish spend a week carving huge, perfectly symmetrical circle patterns in the sand to impress a mate.'},
+     {tag:'Clumsy',h:'Surprisingly bad swimmers',p:'Pufferfish steer with tiny fins, making them slow and wobbly — the puff-up trick makes up for their lack of speed.'},
+     {tag:'Eyes',h:'They can blink and close eyes',p:'Unusually for fish, many pufferfish can actually close their eyes by pulling the eyeball inward and stretching skin over it.'}
+   ]},
+  {id:'gorilla',name:'Gorilla',emoji:'🦍',kicker:'Field notes · Mammal',
+   lede:"A gentle forest giant that shares almost all our DNA, builds a fresh bed every night, and mostly just wants to eat leaves.",
+   facts:[
+     {tag:'DNA',h:'About 98% like us',p:'Gorillas share roughly 98% of their DNA with humans, making them one of our closest living relatives.'},
+     {tag:'Gentle',h:'Big, strong, and mostly peaceful',p:'Despite the scary movies, gorillas are shy plant-eaters who avoid conflict — a silverback’s chest-beating is usually a bluff to avoid a real fight.'},
+     {tag:'Beds',h:'A new nest every night',p:'Each evening gorillas weave a fresh nest of leaves and branches to sleep in, then abandon it and build a new one the next night.'},
+     {tag:'Strength',h:'Many times stronger than us',p:'A gorilla can lift several times its own body weight — estimates put them at up to 10 times stronger than a grown human.'},
+     {tag:'Smarts',h:'They use tools and sign',p:'Wild gorillas use sticks to test water depth, and some in captivity have learned hundreds of sign-language gestures.'},
+     {tag:'Noses',h:'Identified by nose prints',p:'Every gorilla has a unique pattern of wrinkles above its nostrils, so researchers tell them apart by "nose prints."'}
+   ]},
+  {id:'starfish',name:'Starfish',emoji:'⭐',kicker:'Field notes · Echinoderm',
+   lede:"A brainless, bloodless ocean star that walks on hundreds of tiny feet and can regrow a whole new body from one arm.",
+   facts:[
+     {tag:'No brain',h:'No brain and no blood',p:'A sea star has no brain and no blood — it pumps seawater through its body to move and carry nutrients around.'},
+     {tag:'Regrow',h:'Regrows from a single arm',p:'Lose an arm? It grows back. In some species a single severed arm can even grow into an entirely new starfish.'},
+     {tag:'Feet',h:'Walks on hundreds of tube feet',p:'Underneath are hundreds of tiny tube feet powered by water pressure, letting it creep along and pry open shellfish.'},
+     {tag:'Stomach',h:'Eats by ejecting its stomach',p:'A starfish pushes its stomach out through its mouth, digests prey outside its body, then pulls the stomach back in. Wild.'},
+     {tag:'Eyes',h:'An eye on each arm tip',p:'Most sea stars have a simple eye at the end of every arm, so they can sense light all around them.'},
+     {tag:'Not fish',h:'Not a fish at all',p:'Despite the name, starfish aren’t fish — they’re echinoderms, relatives of sea urchins and sand dollars.'}
+   ]},
+  {id:'raccoon',name:'Raccoon',emoji:'🦝',kicker:'Field notes · Mammal',
+   lede:"The masked midnight bandit of backyards and bins — clever, nimble-fingered, and basically a tiny trash raccoon genius.",
+   facts:[
+     {tag:'Hands',h:'Super-sensitive paws',p:'Raccoon paws have so many touch receptors they "see" with their hands, and they often wet objects to feel them even better.'},
+     {tag:'Smarts',h:'Cracks locks and puzzles',p:'Studies show raccoons can open complex latches and remember the solutions for years — escape-artist energy.'},
+     {tag:'Mask',h:'The mask cuts glare',p:'That black mask isn’t just style — it reduces glare and may sharpen their night vision for after-dark raids.'},
+     {tag:'Diet',h:'They’ll eat almost anything',p:'Raccoons are omnivores that munch fruit, eggs, bugs, fish, and yes, your leftovers — adaptability is their superpower.'},
+     {tag:'City life',h:'Urban survival pros',p:'Raccoons thrive in cities, learning traffic, trash schedules, and which bins are easiest, often outsmarting "raccoon-proof" lids.'},
+     {tag:'Sounds',h:'Over 50 different calls',p:'They communicate with more than 50 sounds — purrs, chitters, growls, and whistles — especially between mothers and kits.'}
+   ]},
+  {id:'snail',name:'Snail',emoji:'🐌',kicker:'Field notes · Mollusk',
+   lede:"The original slowpoke that carries its house, glides on slime, and has more teeth than almost anything alive.",
+   facts:[
+     {tag:'Teeth',h:'Thousands of tiny teeth',p:'A snail’s tongue is covered in thousands of microscopic teeth (a radula) that scrape food like a living cheese grater.'},
+     {tag:'Slime',h:'Glides on its own slime',p:'Snail slime is so slick a snail can crawl across a razor blade unharmed, and so sticky it can climb straight up glass.'},
+     {tag:'Sleep',h:'Can nap for years',p:'In bad conditions some snails seal up and sleep (estivate) for months — a few have survived years in hibernation.'},
+     {tag:'House',h:'The shell grows with them',p:'A snail is born with a tiny shell and adds to its spiral as it grows; it can never leave it because it’s part of the body.'},
+     {tag:'Slow',h:'A whole day for a soccer field',p:'A garden snail moves around 1 metre an hour, so crossing a soccer field would take it most of a day.'},
+     {tag:'Breathe',h:'Some breathe with a lung',p:'Land snails breathe through a simple lung and a little breathing hole on the side of the body called a pneumostome.'}
+   ]},
+  {id:'eagle',name:'Eagle',emoji:'🦅',kicker:'Field notes · Bird',
+   lede:"A sky-ruling raptor with eyesight so sharp it can spot lunch from a kilometre up, then dive like a missile.",
+   facts:[
+     {tag:'Eyes',h:'Eyesight 4-8x sharper than ours',p:'An eagle can spot a rabbit from over a kilometre away — its vision is several times sharper than a human’s.'},
+     {tag:'Dive',h:'Plunges over 150 mph',p:'Some eagles fold their wings and dive at well over 150 mph to snatch prey, among the fastest hunting dives around.'},
+     {tag:'Grip',h:'Talons like a vice',p:'An eagle’s grip can be ten times stronger than a human hand, locking onto prey so it can’t wriggle free.'},
+     {tag:'Nest',h:'Builds the biggest nests',p:'Bald eagles build some of the largest nests of any bird — reused and added to for years until they weigh over a tonne.'},
+     {tag:'Soar',h:'Rides invisible elevators',p:'Eagles save energy by riding columns of warm rising air called thermals, circling upward without flapping for hours.'},
+     {tag:'Eyes 2',h:'Built-in sunglasses',p:'A clear third eyelid sweeps sideways to clean and protect the eye, and a bony brow shades it like a sun visor.'}
+   ]},
+  {id:'whale',name:'Blue Whale',emoji:'🐋',kicker:'Field notes · Marine mammal',
+   lede:"The largest animal that has EVER lived — bigger than any dinosaur — with a heart the size of a small car.",
+   facts:[
+     {tag:'Size',h:'The biggest animal ever',p:'A blue whale can reach 30 metres long and weigh as much as 30 elephants — larger than any dinosaur that ever existed.'},
+     {tag:'Heart',h:'A heart the size of a car',p:'Its heart is about the size of a small car and beats so powerfully you could hear it from a couple of kilometres away underwater.'},
+     {tag:'Tongue',h:'A tongue as heavy as an elephant',p:'Just the blue whale’s tongue can weigh as much as a whole elephant.'},
+     {tag:'Eats tiny',h:'Giant living on specks',p:'Despite its size it eats mostly krill — shrimp-like specks — gulping up to 4 tonnes of them a day by filtering seawater.'},
+     {tag:'Loud',h:'Louder than a jet engine',p:'Blue whale calls can hit 188 decibels, louder than a jet, and travel hundreds of kilometres across the ocean.'},
+     {tag:'Baby',h:'The biggest baby on Earth',p:'A newborn calf is already about 7 metres long and drinks hundreds of litres of milk a day, gaining around 90 kg daily.'}
+   ]},
+  {id:'spider',name:'Spider',emoji:'🕷️',kicker:'Field notes · Arachnid',
+   lede:"An eight-legged engineer that spins silk stronger than steel and quietly keeps the bug population in check.",
+   facts:[
+     {tag:'Silk',h:'Silk stronger than steel',p:'Spider silk is, weight for weight, stronger than steel and tougher than Kevlar — scientists are racing to copy it.'},
+     {tag:'Legs',h:'They move legs with pressure',p:'Spiders don’t have muscles to extend their legs; they pump body fluid in to push them out, which is why dead spiders curl up.'},
+     {tag:'Pest control',h:'They eat tons of insects',p:'The world’s spiders together eat an estimated 400–800 million tonnes of insects a year, keeping pest numbers down for free.'},
+     {tag:'Eyes',h:'Often eight eyes',p:'Most spiders have eight eyes, and jumping spiders have such sharp vision they can judge a leap onto prey with pinpoint accuracy.'},
+     {tag:'Web sense',h:'They feel through the web',p:'A spider reads tiny vibrations in its web to know exactly where prey landed and how big it is — the web is one big sense organ.'},
+     {tag:'Flight',h:'Baby spiders "balloon"',p:'Tiny spiders release silk threads and ride air currents and even electric fields to float for kilometres — a trick called ballooning.'}
+   ]},
+  {id:'hippo',name:'Hippo',emoji:'🦛',kicker:'Field notes · Mammal',
+   lede:"A barrel-shaped river giant that can't really swim, sweats red, and is one of the most dangerous animals in Africa.",
+   facts:[
+     {tag:'Sweat',h:'Sweats its own sunscreen',p:'Hippos ooze a reddish oily liquid often called "blood sweat" that acts as sunscreen and antibiotic for their bare skin.'},
+     {tag:'No swim',h:'They walk, not swim',p:'Hippos are too dense to float well, so in deep water they actually push off the bottom and "gallop" along underwater.'},
+     {tag:'Danger',h:'Surprisingly deadly',p:'Despite eating plants, hippos are extremely territorial and aggressive, considered among the most dangerous large animals in Africa.'},
+     {tag:'Jaws',h:'A mouth that opens 150°',p:'A hippo can open its jaws nearly 150 degrees and has huge tusk-like teeth used for fighting, not chewing.'},
+     {tag:'Relatives',h:'Cousins of whales',p:'Strangely, a hippo’s closest living relatives are whales and dolphins, sharing an ancestor that lived in water millions of years ago.'},
+     {tag:'Speed',h:'Faster than they look',p:'For such a chunky animal, a hippo can run around 30 km/h on land for short bursts — faster than most humans can sprint.'}
+   ]},
+  {id:'firefly',name:'Firefly',emoji:'✨',kicker:'Field notes · Insect',
+   lede:"A tiny beetle that turns summer nights into a light show, flashing a glowing secret code to find love.",
+   facts:[
+     {tag:'Light',h:'It makes near-perfect light',p:'A firefly’s glow is "cold light" — almost 100% of the energy becomes light with barely any heat, way more efficient than a bulb.'},
+     {tag:'Code',h:'Flashes are a love language',p:'Each species has its own flash pattern, and males and females signal back and forth in the dark to find the right mate.'},
+     {tag:'Beetle',h:'Not a fly at all',p:'Despite the name, fireflies are actually beetles, and there are over 2,000 different species blinking around the world.'},
+     {tag:'Chemistry',h:'Glows from a reaction',p:'The light comes from a chemical called luciferin reacting with oxygen inside the firefly’s glowing belly — a reaction scientists now use in medical tests.'},
+     {tag:'Larvae',h:'Even the babies glow',p:'Firefly larvae (sometimes called glowworms) also light up, partly to warn predators that they taste terrible.'},
+     {tag:'Tricksters',h:'Some fake the code to hunt',p:'Females of one firefly type mimic another species’ flash to lure in hopeful males — then eat them. Brutal dating scene.'}
+   ]},
+  {id:'orca',name:'Orca',emoji:'🐳',kicker:'Field notes · Marine mammal',
+   lede:"The ocean's top predator and biggest dolphin — a brainy pack hunter with culture, dialects, and zero natural enemies.",
+   facts:[
+     {tag:'Dolphin',h:'The largest dolphin alive',p:'Despite the nickname "killer whale," orcas are actually the biggest member of the dolphin family, not whales.'},
+     {tag:'Top',h:'The ocean’s apex predator',p:'Orcas sit at the very top of the food chain — they hunt seals, sharks, and even whales, and nothing in the sea hunts them.'},
+     {tag:'Brains',h:'Pods have their own culture',p:'Different orca pods have unique calls, hunting tricks, and even favorite foods that they teach their young — basically animal culture.'},
+     {tag:'Dialects',h:'Families speak differently',p:'Each pod has its own "dialect" of clicks and calls, so orcas can recognize their own family by the way they talk.'},
+     {tag:'Teamwork',h:'They make waves on purpose',p:'Some orcas work together to make waves that wash seals off ice floes — coordinated, planned, and taught between generations.'},
+     {tag:'Speed',h:'Fast and far-ranging',p:'Orcas can cruise at up to 50 km/h and travel huge distances, living in every ocean on Earth from the poles to the tropics.'}
    ]}
+
 ];
+
+const META={
+  'sea-turtle':{status:'endang',group:'ocean'},
+  'octopus':{status:'safe',group:'ocean'},
+  'axolotl':{status:'endang',group:'other'},
+  'penguin':{status:'vuln',group:'Bird'},
+  'duck':{status:'safe',group:'Bird'},
+  'fox':{status:'safe',group:'Mammal'},
+  'elephant':{status:'endang',group:'Mammal'},
+  'sloth':{status:'vuln',group:'Mammal'},
+  'cheetah':{status:'vuln',group:'Mammal'},
+  'narwhal':{status:'vuln',group:'ocean'},
+  'mantis-shrimp':{status:'safe',group:'ocean'},
+  'wolf':{status:'safe',group:'Mammal'},
+  'chameleon':{status:'vuln',group:'other'},
+  'dolphin':{status:'safe',group:'ocean'},
+  'frog':{status:'vuln',group:'other'},
+  'hummingbird':{status:'safe',group:'Bird'},
+  'jellyfish':{status:'safe',group:'ocean'},
+  'koala':{status:'endang',group:'Mammal'},
+  'owl':{status:'safe',group:'Bird'},
+  'shark':{status:'vuln',group:'ocean'},
+  'kangaroo':{status:'safe',group:'Mammal'},
+  'tiger':{status:'endang',group:'Mammal'},
+  'bee':{status:'vuln',group:'other'},
+  'platypus':{status:'vuln',group:'Mammal'},
+  'crocodile':{status:'safe',group:'other'},
+  'peacock':{status:'safe',group:'Bird'},
+  'seahorse':{status:'vuln',group:'ocean'},
+  'bat':{status:'safe',group:'Mammal'},
+  'lion':{status:'vuln',group:'Mammal'},
+  'pufferfish':{status:'safe',group:'ocean'},
+  'gorilla':{status:'endang',group:'Mammal'},
+  'starfish':{status:'safe',group:'ocean'},
+  'raccoon':{status:'safe',group:'Mammal'},
+  'snail':{status:'safe',group:'other'},
+  'eagle':{status:'safe',group:'Bird'},
+  'whale':{status:'endang',group:'ocean'},
+  'spider':{status:'safe',group:'other'},
+  'hippo':{status:'vuln',group:'Mammal'},
+  'firefly':{status:'vuln',group:'other'},
+  'orca':{status:'safe',group:'ocean'}
+};
+const STATUS_LABEL={safe:'Least concern',vuln:'Vulnerable',endang:'Endangered'};
 
 const hexSVG='<svg class="hex" viewBox="0 0 100 100"><polygon points="50,3 93,27 93,73 50,97 7,73 7,27" fill="none" stroke="#5fa77d" stroke-width="4"/></svg>';
 const scutesBG='<svg class="band-scutes" preserveAspectRatio="xMidYMid slice" viewBox="0 0 800 800" aria-hidden="true"><rect width="800" height="800" fill="url(#scute)"/></svg>';
 const navList=document.getElementById('navList');
 const sectionsRoot=document.getElementById('animalSections');
 
-ANIMALS.forEach((a,i)=>{
+[...ANIMALS].sort((a,b)=>a.name.localeCompare(b.name)).forEach(a=>{
   const link=document.createElement('a');
   link.className='nav-link';
   link.href='#'+a.id;
   link.dataset.target=a.id;
   link.innerHTML='<span class="emoji">'+a.emoji+'</span> '+a.name;
   navList.appendChild(link);
+});
 
+ANIMALS.forEach((a,i)=>{
+  const meta=META[a.id]||{status:'safe',group:'other'};
   const sec=document.createElement('section');
   sec.id=a.id;
   sec.className='band '+(i%2===0?'band-a':'band-b');
+  sec.dataset.group=meta.group;
+  sec.dataset.name=a.name.toLowerCase();
   let factsHTML='';
   a.facts.forEach(f=>{
     factsHTML+='<article class="fact">'+hexSVG+'<span class="tag">'+f.tag+'</span><h3>'+f.h+'</h3><p>'+f.p+'</p></article>';
   });
+  const badge='<span class="status-badge status-'+meta.status+'"><span class="dot"></span>'+STATUS_LABEL[meta.status]+'</span>';
   sec.innerHTML=
     scutesBG+
     '<div class="wrap">'+
       '<div class="animal-head">'+
         '<span class="animal-emoji">'+a.emoji+'</span>'+
         '<div><span class="section-kicker">'+a.kicker+'</span>'+
-        '<h2 class="section-title">'+a.name+'</h2></div>'+
+        '<h2 class="section-title">'+a.name+'</h2>'+badge+'</div>'+
       '</div>'+
       '<p class="lede">'+a.lede+'</p>'+
       '<div class="facts">'+factsHTML+'</div>'+
@@ -500,7 +938,7 @@ document.querySelector('.nav-link[data-target="hero"]').addEventListener('click'
 });
 
 const links=document.querySelectorAll('.nav-link');
-const targets=[document.getElementById('hero'),document.getElementById('about'),...ANIMALS.map(a=>document.getElementById(a.id))];
+const targets=[document.getElementById('hero'),document.getElementById('about'),document.getElementById('planet'),...ANIMALS.map(a=>document.getElementById(a.id))];
 const obs=new IntersectionObserver(entries=>{
   entries.forEach(en=>{
     if(en.isIntersecting){
@@ -509,6 +947,54 @@ const obs=new IntersectionObserver(entries=>{
   });
 },{rootMargin:'-45% 0px -50% 0px'});
 targets.forEach(t=>obs.observe(t));
+
+/* ---------- Search + filter ---------- */
+const searchInput=document.getElementById('searchInput');
+const chips=document.querySelectorAll('.chip[data-filter]');
+let activeFilter='all';
+const animalSecs=()=>ANIMALS.map(a=>document.getElementById(a.id));
+
+let noResults=document.createElement('div');
+noResults.className='no-results';
+noResults.textContent='No critters match that. Try another search 🐾';
+sectionsRoot.appendChild(noResults);
+
+function applyFilter(){
+  const q=searchInput.value.trim().toLowerCase();
+  let shown=0;
+  animalSecs().forEach(sec=>{
+    const g=sec.dataset.group;
+    const name=sec.dataset.name;
+    const matchFilter=activeFilter==='all'||g===activeFilter;
+    const matchSearch=!q||name.includes(q)||g.toLowerCase().includes(q);
+    const show=matchFilter&&matchSearch;
+    sec.classList.toggle('hidden',!show);
+    if(show)shown++;
+  });
+  noResults.style.display=shown===0?'block':'none';
+}
+searchInput.addEventListener('input',applyFilter);
+chips.forEach(c=>c.addEventListener('click',()=>{
+  chips.forEach(x=>x.classList.remove('active'));
+  c.classList.add('active');
+  activeFilter=c.dataset.filter;
+  applyFilter();
+}));
+
+/* ---------- Random animal ---------- */
+document.getElementById('randomBtn').addEventListener('click',()=>{
+  searchInput.value='';
+  chips.forEach(x=>x.classList.remove('active'));
+  document.querySelector('.chip[data-filter="all"]').classList.add('active');
+  activeFilter='all';applyFilter();
+  const pick=ANIMALS[Math.floor(Math.random()*ANIMALS.length)];
+  const el=document.getElementById(pick.id);
+  el.scrollIntoView({behavior:'smooth',block:'start'});
+  el.querySelector('.section-title').animate(
+    [{transform:'scale(1)'},{transform:'scale(1.06)'},{transform:'scale(1)'}],
+    {duration:600,easing:'ease-out'}
+  );
+});
 </script>
 </body>
 </html>
