@@ -6,11 +6,11 @@ Tortuga shares the wild, weird, true facts about animals — from sea turtles ol
 
 ## About
 
-A single-page interactive field guide featuring 12 animals (sea turtle, octopus, axolotl, penguin, duck, fox, elephant, sloth, cheetah, narwhal, mantis shrimp, and wolf), each with a set of strange-but-true facts.
+A single-page interactive field guide featuring 40 animals, each with a set of strange-but-true facts, plus an "About Us" note and a "Save the Planet" section. Animals are listed alphabetically in the sidebar.
 
 ## Tech
 
-A self-contained static site — one `index.html` file with all HTML, CSS, and JavaScript inline. No build step required.
+A self-contained static site — one `index.html` file with all HTML, CSS, and JavaScript inline. No build step required. All animal content lives in a single `ANIMALS` array in the inline `<script>`, and the sidebar and sections are generated from it.
 
 ## Local preview
 
