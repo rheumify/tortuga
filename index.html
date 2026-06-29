@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tortuga — a field guide to the animal kingdom</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,900;1,9..144,500&family=Nunito+Sans:opsz,wght@6..12,400;6..12,600;6..12,800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --abyss:#062b29;
+    --deep:#0c4a45;
+    --shell:#2e6f5e;
+    --moss:#5fa77d;
+    --foam:#bfe3d6;
+    --sand:#ecc474;
+    --coral:#f08a5d;
+    --cream:#f5efde;
+    --ink:#08211f;
+    --display:'Fraunces',Georgia,serif;
+    --body:'Nunito Sans',system-ui,sans-serif;
+    --sidebar-w:248px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    background:var(--abyss);
+    color:var(--cream);
+    font-family:var(--body);
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+  a{color:inherit;text-decoration:none}
+  ::selection{background:var(--coral);color:var(--ink)}
+
+  .wrap{max-width:1080px;margin:0 auto;padding:0 24px}
+
+  .layout{display:flex}
+  .content{flex:1;min-width:0}
+
+  .sidebar{
+    position:fixed;top:0;left:0;width:var(--sidebar-w);height:100vh;
+    background:linear-gradient(180deg,#04211f 0%,#062b29 100%);
+    border-right:1.5px solid rgba(95,167,125,.22);
+    padding:26px 16px;z-index:50;overflow-y:auto;
+    display:flex;flex-direction:column;gap:6px;
+    transition:transform .28s ease;
+  }
+  .sidebar-brand{
+    font-family:var(--display);font-weight:900;font-size:1.5rem;
+    color:var(--cream);letter-spacing:-.01em;padding:4px 12px 2px;
+  }
+  .sidebar-brand em{font-style:italic;font-weight:500;color:var(--moss)}
+  .sidebar-sub{
+    font-family:var(--body);font-weight:800;font-size:.62rem;
+    letter-spacing:.22em;text-transform:uppercase;color:var(--sand);
+    padding:0 12px;margin-bottom:18px;
+  }
+  .nav-label{
+    font-family:var(--body);font-weight:800;font-size:.62rem;
+    letter-spacing:.2em;text-transform:uppercase;color:var(--foam);
+    opacity:.55;padding:14px 12px 6px;
+  }
+  .nav-link{
+    display:flex;align-items:center;gap:11px;
+    padding:10px 12px;border-radius:12px;
+    font-weight:700;font-size:.95rem;color:var(--cream);
+    transition:background .15s ease,transform .12s ease;
+    cursor:pointer;
+  }
+  .nav-link .emoji{font-size:1.2rem;line-height:1;width:24px;text-align:center}
+  .nav-link:hover{background:rgba(95,167,125,.18);transform:translateX(3px)}
+  .nav-link.active{background:var(--coral);color:var(--ink)}
+  .nav-link.active:hover{transform:translateX(3px)}
+
+  .menu-btn{
+    position:fixed;top:16px;left:16px;z-index:60;
+    background:var(--coral);color:var(--ink);border:none;
+    width:48px;height:48px;border-radius:14px;cursor:pointer;
+    font-size:1.4rem;display:none;align-items:center;justify-content:center;
+    box-shadow:0 8px 24px -8px rgba(0,0,0,.6);
+  }
+  .scrim{
+    position:fixed;inset:0;background:rgba(4,21,20,.6);z-index:45;
+    opacity:0;pointer-events:none;transition:opacity .25s ease;backdrop-filter:blur(2px);
+  }
+  .scrim.show{opacity:1;pointer-events:auto}
+
+  .main{margin-left:var(--sidebar-w)}
+
+  .hero{
+    position:relative;min-height:100svh;
+    display:flex;flex-direction:column;justify-content:center;
+    padding:80px 0 60px;overflow:hidden;
+  }
+  .scutes{position:absolute;inset:0;opacity:.16;z-index:0}
+  .hero-grad{
+    position:absolute;inset:0;z-index:0;
+    background:radial-gradient(120% 90% at 80% -10%, #11635a 0%, var(--abyss) 55%, #041d1c 100%);
+  }
+  .hero-inner{position:relative;z-index:2}
+  .eyebrow{
+    font-family:var(--body);font-weight:800;font-size:.78rem;
+    letter-spacing:.28em;text-transform:uppercase;color:var(--sand);
+    display:flex;align-items:center;gap:14px;margin-bottom:22px;
+  }
+  .eyebrow::before{content:"";width:42px;height:2px;background:var(--sand);display:inline-block}
+  .wordmark{
+    font-family:var(--display);font-weight:900;
+    font-size:clamp(3.4rem,13vw,9rem);
+    line-height:.86;letter-spacing:-.02em;color:var(--cream);
+  }
+  .wordmark em{font-style:italic;font-weight:500;color:var(--moss)}
+  .tagline{
+    font-family:var(--display);font-style:italic;font-weight:500;
+    font-size:clamp(1.15rem,2.6vw,1.7rem);
+    max-width:40ch;margin:26px 0 0;color:var(--foam);
+  }
+  .hero-cta{display:flex;gap:14px;flex-wrap:wrap;margin-top:38px}
+  .btn{
+    font-family:var(--body);font-weight:800;font-size:.95rem;
+    padding:14px 26px;border-radius:999px;border:2px solid transparent;
+    cursor:pointer;text-decoration:none;display:inline-block;transition:transform .15s ease,background .2s ease,color .2s ease;
+  }
+  .btn:hover{transform:translateY(-2px)}
+  .btn-solid{background:var(--coral);color:var(--ink)}
+  .btn-ghost{border-color:rgba(245,239,222,.4);color:var(--cream)}
+  .btn-ghost:hover{border-color:var(--sand);color:var(--sand)}
+
+  .turtle-stage{
+    position:absolute;z-index:1;right:-4%;top:50%;
+    width:min(42vw,520px);transform:translateY(-50%);pointer-events:none;
+  }
+  .swim{animation:swim 9s ease-in-out infinite}
+  .flipper-f{transform-origin:60% 60%;animation:flip 2.4s ease-in-out infinite}
+  .flipper-b{transform-origin:60% 50%;animation:flip 2.4s ease-in-out infinite .3s}
+  @keyframes swim{0%,100%{transform:translateY(-50%) translate(0,0) rotate(-2deg)}50%{transform:translateY(-50%) translate(-12px,18px) rotate(2deg)}}
+  @keyframes flip{0%,100%{transform:rotate(8deg)}50%{transform:rotate(-22deg)}}
+  .bubble{position:absolute;border-radius:50%;background:rgba(191,227,214,.25);border:1px solid rgba(191,227,214,.4);animation:rise linear infinite;z-index:1}
+  @keyframes rise{0%{transform:translateY(0) scale(.6);opacity:0}15%{opacity:.8}100%{transform:translateY(-90vh) scale(1);opacity:0}}
+
+  .scroll-hint{position:absolute;bottom:26px;left:50%;transform:translateX(-50%);z-index:2;font-size:.72rem;letter-spacing:.25em;text-transform:uppercase;color:var(--foam);opacity:.7;animation:nudge 2s ease-in-out infinite}
+  @keyframes nudge{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(7px)}}
+
+  section{position:relative;z-index:2;scroll-margin-top:20px}
+  .band{padding:90px 0;position:relative;overflow:hidden}
+  .band-a{background:radial-gradient(120% 80% at 15% 0%, #0e544c 0%, var(--abyss) 60%, #041d1c 100%)}
+  .band-b{background:radial-gradient(120% 80% at 85% 0%, #0c4a45 0%, #052422 60%, #062b29 100%)}
+  .band-scutes{position:absolute;inset:0;opacity:.06;z-index:0;pointer-events:none}
+  .band .wrap{position:relative;z-index:2}
+
+  .animal-head{display:flex;align-items:center;gap:22px;margin-bottom:14px;flex-wrap:wrap}
+  .animal-emoji{font-size:clamp(2.6rem,7vw,4.2rem);line-height:1;filter:drop-shadow(0 8px 14px rgba(0,0,0,.4))}
+  .section-kicker{font-family:var(--body);font-weight:800;letter-spacing:.2em;text-transform:uppercase;font-size:.72rem;color:var(--coral);display:block;margin-bottom:6px}
+  .section-title{font-family:var(--display);font-weight:900;font-size:clamp(2rem,5vw,3.4rem);line-height:1;letter-spacing:-.02em;color:var(--cream)}
+  .lede{font-family:var(--display);font-style:italic;font-size:clamp(1.05rem,2vw,1.35rem);max-width:62ch;margin-bottom:40px;color:var(--foam)}
+
+  .facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:20px}
+  .fact{
+    position:relative;border-radius:20px;padding:30px 26px 28px;overflow:hidden;
+    background:rgba(12,74,69,.4);border:1.5px solid rgba(95,167,125,.3);
+    backdrop-filter:blur(3px);
+    transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease;
+  }
+  .fact:hover{transform:translateY(-4px);box-shadow:0 18px 40px -20px rgba(0,0,0,.6);border-color:rgba(95,167,125,.6)}
+  .fact .hex{position:absolute;right:-26px;top:-26px;width:96px;height:96px;opacity:.18}
+  .fact .hex polygon{stroke:var(--moss)}
+  .fact h3{font-family:var(--display);font-weight:600;font-size:1.35rem;line-height:1.12;margin-bottom:10px;position:relative;color:var(--moss)}
+  .fact p{font-size:.97rem;position:relative;color:#cfe6dd}
+  .fact .tag{display:inline-block;font-family:var(--body);font-weight:800;font-size:.66rem;letter-spacing:.16em;text-transform:uppercase;color:var(--coral);margin-bottom:14px}
+
+  footer{background:#041d1c;padding:54px 0;text-align:center;color:var(--foam)}
+  footer .mark{font-family:var(--display);font-weight:900;font-size:1.6rem;color:var(--cream);letter-spacing:-.01em}
+  footer .mark em{font-style:italic;font-weight:500;color:var(--moss)}
+  footer p{font-size:.86rem;opacity:.7;margin-top:10px;max-width:52ch;margin-left:auto;margin-right:auto}
+
+  @media (max-width:900px){
+    .sidebar{transform:translateX(-100%)}
+    .sidebar.open{transform:translateX(0)}
+    .main{margin-left:0}
+    .menu-btn{display:flex}
+  }
+  @media (max-width:640px){
+    .turtle-stage{opacity:.32;right:-18%}
+    .band{padding:64px 0}
+    .wordmark{margin-top:30px}
+  }
+  @media (prefers-reduced-motion:reduce){
+    .swim,.flipper-f,.flipper-b,.bubble,.scroll-hint{animation:none}
+  }
+</style>
+</head>
+<body>
+
+<button class="menu-btn" id="menuBtn" aria-label="Open menu">☰</button>
+<div class="scrim" id="scrim"></div>
+
+<div class="layout">
+  <nav class="sidebar" id="sidebar">
+    <div class="sidebar-brand">Tort<em>uga</em></div>
+    <div class="sidebar-sub">Field Guide</div>
+    <a class="nav-link" data-target="hero"><span class="emoji">🌊</span> Home</a>
+    <a class="nav-link" data-target="about"><span class="emoji">🐢</span> About Us</a>
+    <div class="nav-label">Jump to an animal</div>
+    <div id="navList"></div>
+  </nav>
+
+  <div class="main">
+  <div class="content">
+
+  <header class="hero" id="hero">
+    <div class="hero-grad"></div>
+    <svg class="scutes" preserveAspectRatio="xMidYMid slice" viewBox="0 0 800 800" aria-hidden="true">
+      <defs>
+        <pattern id="scute" width="120" height="104" patternUnits="userSpaceOnUse">
+          <polygon points="60,2 116,28 116,76 60,102 4,76 4,28" fill="none" stroke="#5fa77d" stroke-width="2"/>
+          <polygon points="0,80 28,52 0,24" fill="none" stroke="#5fa77d" stroke-width="2"/>
+        </pattern>
+      </defs>
+      <rect width="800" height="800" fill="url(#scute)"/>
+    </svg>
+
+    <div class="turtle-stage" aria-hidden="true">
+      <svg viewBox="0 0 420 320" class="swim" xmlns="http://www.w3.org/2000/svg">
+        <ellipse cx="220" cy="170" rx="130" ry="98" fill="#2e6f5e"/>
+        <ellipse cx="220" cy="170" rx="130" ry="98" fill="none" stroke="#0c4a45" stroke-width="6"/>
+        <g fill="none" stroke="#5fa77d" stroke-width="4" opacity=".9">
+          <polygon points="220,90 258,130 240,180 200,180 182,130"/>
+          <polygon points="182,130 200,180 165,205 132,168 150,128"/>
+          <polygon points="258,130 240,180 278,205 310,168 292,128"/>
+          <polygon points="200,180 240,180 232,228 208,228"/>
+        </g>
+        <circle cx="72" cy="158" r="42" fill="#3a8268"/>
+        <circle cx="72" cy="158" r="42" fill="none" stroke="#0c4a45" stroke-width="6"/>
+        <circle cx="58" cy="150" r="6" fill="#08211f"/>
+        <path class="flipper-f" d="M150 110 Q90 40 70 70 Q120 110 150 150 Z" fill="#3a8268" stroke="#0c4a45" stroke-width="5"/>
+        <path class="flipper-b" d="M300 230 Q360 290 380 258 Q330 222 300 200 Z" fill="#3a8268" stroke="#0c4a45" stroke-width="5"/>
+      </svg>
+    </div>
+
+    <div class="wrap hero-inner">
+      <p class="eyebrow">A field guide to the animal kingdom</p>
+      <h1 class="wordmark">Tort<em>uga</em></h1>
+      <p class="tagline">Welcome to Tortuga. Older than the dinosaurs, weirder than fiction — meet the creatures that swim, soar, stomp and scurry across our planet, one strange true fact at a time.</p>
+      <div class="hero-cta">
+        <a href="#sea-turtle" class="btn btn-solid">Start exploring</a>
+        <a class="btn btn-ghost" id="openMenuLink">Pick an animal</a>
+      </div>
+    </div>
+    <div class="scroll-hint">scroll</div>
+  </header>
+
+  <main id="animalSections">
+    <section id="about" class="band band-a">
+      <svg class="band-scutes" preserveAspectRatio="xMidYMid slice" viewBox="0 0 800 800" aria-hidden="true"><rect width="800" height="800" fill="url(#scute)"/></svg>
+      <div class="wrap">
+        <div class="animal-head">
+          <span class="animal-emoji">🐢</span>
+          <div>
+            <span class="section-kicker">About Us</span>
+            <h2 class="section-title">Why this exists</h2>
+          </div>
+        </div>
+        <p class="lede">I love animals — like, genuinely obsessed — and I built Tortuga to get more people just as hooked on how wild and weird the natural world really is.</p>
+        <div class="facts">
+          <article class="fact">
+            <svg class="hex" viewBox="0 0 100 100"><polygon points="50,3 93,27 93,73 50,97 7,73 7,27" fill="none" stroke="#5fa77d" stroke-width="4"/></svg>
+            <span class="tag">The mission</span>
+            <h3>Spark curiosity</h3>
+            <p>Every animal on Earth is doing something incredible right now — surviving, building, outsmarting, adapting. Tortuga is here to share those facts in a way that actually makes you go "wait, WHAT?" and want to learn more.</p>
+          </article>
+          <article class="fact">
+            <svg class="hex" viewBox="0 0 100 100"><polygon points="50,3 93,27 93,73 50,97 7,73 7,27" fill="none" stroke="#5fa77d" stroke-width="4"/></svg>
+            <span class="tag">The why</span>
+            <h3>The more you know, the more you care</h3>
+            <p>People protect what they love, and they love what they understand. If learning that octopuses have three hearts or that sloths poop once a week makes you smile, maybe it also makes you want to keep their world safe.</p>
+          </article>
+          <article class="fact">
+            <svg class="hex" viewBox="0 0 100 100"><polygon points="50,3 93,27 93,73 50,97 7,73 7,27" fill="none" stroke="#5fa77d" stroke-width="4"/></svg>
+            <span class="tag">The vibe</span>
+            <h3>No boring textbook energy</h3>
+            <p>This isn't a homework assignment. It's a field guide built for curious people who want the fun, jaw-dropping, true stuff — bite-sized, honest, and a little bit chaotic. Pick an animal from the sidebar and dive in.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <div class="mark">Tort<em>uga</em></div>
+      <p>Built for the curious. Every animal here shares one planet with us — and a lot of them are counting on us to keep it clean, wild, and worth swimming through.</p>
+    </div>
+  </footer>
+
+  </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  const hero=document.querySelector('.hero');
+  if(window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  for(let i=0;i<14;i++){
+    const b=document.createElement('div');
+    b.className='bubble';
+    const s=4+Math.random()*16;
+    b.style.width=b.style.height=s+'px';
+    b.style.left=Math.random()*100+'%';
+    b.style.bottom=(-10-Math.random()*20)+'%';
+    b.style.animationDuration=(7+Math.random()*9)+'s';
+    b.style.animationDelay=(Math.random()*8)+'s';
+    hero.appendChild(b);
+  }
+})();
+
+const ANIMALS=[
+  {id:'sea-turtle',name:'Sea Turtle',emoji:'🐢',kicker:'Field notes · Reptile',
+   lede:"Older than the dinosaurs, slower than your Monday, and carrying their own roof. The original ocean wanderer.",
+   facts:[
+     {tag:'Skeleton',h:'The shell IS its spine',p:'A turtle can never crawl out of its shell — it’s fused to the skeleton, built from the ribs and backbone grown outward into a bony case.'},
+     {tag:'Deep time',h:'Older than the dinosaurs’ reign',p:'Turtles have been around for over 200 million years, surviving the mass extinction that wiped out the dinosaurs.'},
+     {tag:'Breath',h:'Hours on a single breath',p:'A resting sea turtle can stay underwater for hours, slowing its heart to one beat several seconds apart while it sleeps on the seafloor.'},
+     {tag:'Heat',h:'Temperature picks the sex',p:'For many turtles, the nest’s warmth decides the hatchlings’ sex — warmer sand makes more females, cooler sand more males.'},
+     {tag:'Navigation',h:'A built-in compass',p:'Sea turtles read Earth’s magnetic field to cross whole oceans, then return to the very beach where they hatched to lay their own eggs.'},
+     {tag:'Lifespan',h:'They outlive almost everything',p:'Many sea turtles live 50 to 100 years. A few giant tortoises alive today were hatched before the lightbulb was invented.'},
+     {tag:'Crying',h:'They "cry" salt',p:'Sea turtles drink seawater and get rid of the extra salt through special glands near their eyes, so they always look like they’re weeping.'},
+     {tag:'Tiny start',h:'A hatchling sprint of doom',p:'Newborn turtles dig out of the sand and race to the sea past crabs and birds. Only about 1 in 1,000 survives to adulthood.'}
+   ]},
+  {id:'octopus',name:'Octopus',emoji:'🐙',kicker:'Field notes · Cephalopod',
+   lede:"Three hearts, blue blood, and nine brains. If aliens lived in the ocean, they'd probably look like this.",
+   facts:[
+     {tag:'Anatomy',h:'Three hearts, blue blood',p:'Two hearts pump blood to the gills and one to the rest of the body. Their blood is blue because it uses copper instead of iron to carry oxygen.'},
+     {tag:'Brains',h:'Nine brains, basically',p:'An octopus has a central brain plus a cluster of neurons in each arm — so every arm can taste, touch and "think" somewhat on its own.'},
+     {tag:'Camouflage',h:'Instant costume change',p:'Special skin cells let an octopus change color and texture in under a second to vanish against rock, coral, or sand — even though they’re likely colorblind.'},
+     {tag:'Escape',h:'Squeezes through anything',p:'With no bones, an octopus can pour its whole body through a gap the size of its eyeball — the only hard part of it is its beak.'},
+     {tag:'Smarts',h:'Genuinely a genius',p:'Octopuses solve puzzles, open jars, use tools, and have escaped aquarium tanks by memorizing the way out. Big brain energy.'},
+     {tag:'Ink',h:'A smokescreen getaway',p:'When threatened, an octopus blasts a cloud of dark ink that also dulls a predator’s sense of smell, then jets away in the confusion.'},
+     {tag:'Taste',h:'Tastes with its arms',p:'The suckers along each arm can taste whatever they touch, so an octopus is basically licking everything it grabs without using its mouth.'}
+   ]},
+  {id:'axolotl',name:'Axolotl',emoji:'🦎',kicker:'Field notes · Amphibian',
+   lede:"The smiling salamander that never grows up — and can regrow almost any body part like it’s no big deal.",
+   facts:[
+     {tag:'Regrowth',h:'Regrows literally anything',p:'Lose a leg? A tail? Part of the heart, spine, or even brain? An axolotl regrows it perfectly, no scar — which is why scientists are obsessed with them.'},
+     {tag:'Forever young',h:'Stays a baby for life',p:'Most salamanders grow up and leave the water. Axolotls keep their feathery gills and stay aquatic their whole lives — a trait called neoteny.'},
+     {tag:'The smile',h:'That iconic face',p:'Those frilly pink "antlers" are external gills, and the permanent grin is just the shape of their mouth. Peak serotonin animal.'},
+     {tag:'Endangered',h:'Nearly gone in the wild',p:'Wild axolotls live in only one lake system near Mexico City and are critically endangered — even though millions are kept as pets worldwide.'},
+     {tag:'Colors',h:'A rainbow of morphs',p:'Wild axolotls are dark and speckled, but bred ones come in pink, golden, and even near-transparent forms where you can spot their organs.'},
+     {tag:'Transplants',h:'They accept spare parts',p:'Axolotls can have body parts grafted on — even from another axolotl — and simply fuse them in and start using them.'}
+   ]},
+  {id:'penguin',name:'Penguin',emoji:'🐧',kicker:'Field notes · Bird',
+   lede:"A bird that traded the sky for the sea, wears a permanent tuxedo, and is somehow the best swimmer at the party.",
+   facts:[
+     {tag:'Flight',h:'Birds that "fly" underwater',p:'Penguins can’t fly through air, but they flap those stiff wings to fly through water — some species hit 22 mph and dive over 500 metres deep.'},
+     {tag:'Romance',h:'Pebble proposals',p:'Gentoo penguins propose by finding the smoothest pebble they can and presenting it to a mate. If she keeps it, they’re basically engaged.'},
+     {tag:'Squad',h:'The huddle',p:'Emperor penguins survive −40°C by huddling in tight groups of thousands, constantly rotating so everyone gets a turn in the warm middle.'},
+     {tag:'Dads',h:'Dad does the egg shift',p:'Male emperor penguins balance the egg on their feet through the brutal Antarctic winter for two months without eating, while mom hunts.'},
+     {tag:'Sight',h:'Better eyes underwater',p:'Penguin eyes are tuned for the sea — they see more clearly underwater than they do up on land.'},
+     {tag:'Counter-shading',h:'Their tuxedo is camo',p:'The black back and white belly aren’t just for style — from above they blend with dark water, from below they blend with bright sky.'},
+     {tag:'Slide mode',h:'They toboggan to save energy',p:'Instead of waddling, penguins flop onto their bellies and slide across ice on their tummies — it’s faster and uses less energy.'}
+   ]},
+  {id:'duck',name:'Duck',emoji:'🦆',kicker:'Field notes · Bird',
+   lede:"Bread enthusiast, pond royalty, and a far stranger creature than the calm waddle lets on.",
+   facts:[
+     {tag:'Sleep',h:'Sleeps with one eye open',p:'Ducks can shut down half their brain at a time, keeping one eye open to watch for danger — the ducks on the edge of the group do this most.'},
+     {tag:'Waterproof',h:'Built-in raincoat',p:'A duck spreads oil from a gland near its tail across its feathers, so water rolls right off and the down underneath stays bone dry.'},
+     {tag:'Feet',h:'No cold feet',p:'Duck feet have no nerves or blood vessels that feel cold, so they can stand on ice all day without noticing.'},
+     {tag:'Echo myth',h:'A quack DOES echo',p:'The old "a duck’s quack doesn’t echo" claim is a total myth — it does, people just rarely hear it clearly outdoors.'},
+     {tag:'Imprinting',h:'First thing they see = mom',p:'Newly hatched ducklings imprint on the first moving thing they see and follow it everywhere — even if that thing is a human in boots.'},
+     {tag:'Bread = bad',h:'Bread is junk food for ducks',p:'Plain bread fills ducks up with zero nutrition and can make them sick. Cracked corn, peas, or oats are way better pond snacks.'},
+     {tag:'Speed',h:'Faster than they look',p:'Ducks are speed demons in the air — some species hit around 60 mph in level flight, among the fastest birds around.'}
+   ]},
+  {id:'fox',name:'Fox',emoji:'🦊',kicker:'Field notes · Mammal',
+   lede:"Half cat, half dog, fully chaotic. The clever trickster of forests, deserts, and increasingly, your neighbourhood.",
+   facts:[
+     {tag:'Catlike',h:'A dog that acts like a cat',p:'Foxes have vertical cat-like pupils and they pounce and play exactly like cats — despite being members of the dog family.'},
+     {tag:'Hearing',h:'Hears a mouse underground',p:'A fox can hear a small animal squeaking or digging from many metres away, then leap and dive nose-first into snow to catch it.'},
+     {tag:'Magnetism',h:'Hunts using Earth’s field',p:'Foxes seem to use Earth’s magnetic field to aim their pounce — they’re far more successful when they jump toward magnetic north.'},
+     {tag:'Sounds',h:'Over 40 different sounds',p:'Foxes scream, gekker, bark and "laugh." That blood-curdling night scream is often just a fox saying hello (or looking for love).'},
+     {tag:'Whiskers',h:'Whiskers on their legs',p:'Foxes have sensing whiskers not just on the face but on their legs, helping them navigate in the dark.'},
+     {tag:'Tail',h:'A built-in scarf and rudder',p:'A fox’s bushy tail (its "brush") wraps around it like a blanket in the cold and helps it balance and steer mid-sprint.'},
+     {tag:'City life',h:'Surprise urban genius',p:'Red foxes have adapted to cities worldwide, learning traffic patterns and turning parks and backyards into hunting grounds.'}
+   ]},
+  {id:'elephant',name:'Elephant',emoji:'🐘',kicker:'Field notes · Mammal',
+   lede:"The biggest animal on land, with a memory and an emotional life to match. Gentle giants with very long to-do lists.",
+   facts:[
+     {tag:'Trunk',h:'40,000 muscles in the trunk',p:'An elephant’s trunk has around 40,000 muscles (humans have about 600 in the whole body) — strong enough to push a tree, gentle enough to pick up a single blade of grass.'},
+     {tag:'Memory',h:'Never forgets a friend',p:'Elephants remember other elephants and humans for decades, and can recall water sources across huge distances years later.'},
+     {tag:'Feelings',h:'They grieve their dead',p:'Elephants visit and gently touch the bones of dead family members, showing behaviour that looks a lot like mourning.'},
+     {tag:'Hearing',h:'Listens with its feet',p:'Elephants pick up deep rumbles through the ground using their feet and trunks, "hearing" calls from kilometres away.'},
+     {tag:'Sunscreen',h:'They make their own sunscreen',p:'Elephants throw dust and mud over themselves to protect their skin from sunburn and bugs. Skincare routine: elite.'},
+     {tag:'Babies',h:'Almost two years pregnant',p:'Elephants have the longest pregnancy of any mammal — about 22 months. A newborn already weighs around 100 kg.'},
+     {tag:'Greetings',h:'They say hi by hugging',p:'Reunited elephants flap their ears, spin, trumpet and intertwine trunks — a full-body celebration scientists call a "greeting ceremony."'}
+   ]},
+  {id:'sloth',name:'Sloth',emoji:'🦥',kicker:'Field notes · Mammal',
+   lede:"The undisputed champion of doing absolutely nothing, very slowly, and somehow thriving at it.",
+   facts:[
+     {tag:'Speed',h:'Slower than slow',p:'A sloth moves around 0.15 mph and may travel just 40 metres in a day. Their slowness is a survival trick — it makes them nearly invisible to predators.'},
+     {tag:'Digestion',h:'A meal takes weeks',p:'It can take a sloth up to a month to digest a single batch of leaves — one of the slowest digestive systems of any mammal.'},
+     {tag:'Algae',h:'A garden grows on them',p:'Sloths move so little that green algae grows in their fur, giving them camouflage and even hosting tiny insects and moths.'},
+     {tag:'Swimming',h:'Surprisingly good swimmers',p:'Despite being painfully slow on land, sloths can swim about three times faster than they crawl, and can hold their breath up to 40 minutes.'},
+     {tag:'Bathroom',h:'One bathroom trip a week',p:'Sloths only come down from the trees to poop about once a week — the single most dangerous thing they do.'},
+     {tag:'Grip',h:'They can hang on after death',p:'Their grip is so strong from curved claws that sloths have been found still hanging from branches even after dying. Total commitment.'},
+     {tag:'Neck',h:'A full 270° head turn',p:'Extra neck bones let sloths rotate their heads almost all the way around, so they can scan for food without moving their lazy bodies.'}
+   ]},
+  {id:'cheetah',name:'Cheetah',emoji:'🐆',kicker:'Field notes · Mammal',
+   lede:"The fastest land animal alive — a sprint machine that goes 0 to 60 faster than most sports cars, then needs a nap.",
+   facts:[
+     {tag:'Speed',h:'Faster than a sports car launch',p:'A cheetah can hit 70 mph and reaches 60 mph in about 3 seconds — quicker acceleration than many supercars.'},
+     {tag:'Tail',h:'A rudder for tight turns',p:'That long tail acts like a counterbalance and rudder, letting a cheetah make hairpin turns at full speed without tumbling.'},
+     {tag:'Stride',h:'Briefly fully airborne',p:'At a full sprint, all four feet leave the ground twice per stride — for a moment the cheetah is completely flying.'},
+     {tag:'Cooldown',h:'Can only sprint ~30 seconds',p:'Chasing at top speed overheats them fast, so a cheetah must catch prey in around 30 seconds or give up and rest.'},
+     {tag:'No roar',h:'It chirps and purrs',p:'Cheetahs can’t roar like lions. Instead they chirp like birds, purr, and make a high-pitched call to find each other.'},
+     {tag:'Grip claws',h:'Claws like running spikes',p:'Unlike other cats, a cheetah’s claws don’t fully retract — they dig in like athletic cleats for extra traction.'},
+     {tag:'Eye-liner',h:'Built-in sun stripes',p:'The black "tear marks" running from their eyes cut sun glare, like the eye-black athletes wear, helping them spot prey in bright light.'}
+   ]},
+  {id:'narwhal',name:'Narwhal',emoji:'🐳',kicker:'Field notes · Marine mammal',
+   lede:"The unicorn of the sea — an Arctic whale with a giant spiraled tusk that scientists are still figuring out.",
+   facts:[
+     {tag:'Tusk',h:'The tusk is a giant tooth',p:'A narwhal’s "horn" is actually an overgrown tooth that spirals up to 3 metres long, poking right through its upper lip.'},
+     {tag:'Sense',h:'A tooth that feels',p:'The tusk is packed with millions of nerve endings, letting narwhals sense water temperature, pressure, and saltiness.'},
+     {tag:'Deep dive',h:'Plunges over a mile down',p:'Narwhals are among the deepest-diving whales, plunging more than 1,500 metres to hunt fish in near-freezing darkness.'},
+     {tag:'Arctic only',h:'Lives in the icy far north',p:'Narwhals stay in Arctic waters year-round, navigating cracks in the sea ice and surviving where almost nothing else can.'},
+     {tag:'Echo',h:'Sees with sound',p:'In the dark deep, narwhals use clicks and echolocation to "see" their surroundings and find food by listening to the echoes.'},
+     {tag:'Myth origin',h:'They invented the unicorn',p:'For centuries, narwhal tusks were sold as "unicorn horns" in Europe for huge sums — fueling the unicorn legend.'}
+   ]},
+  {id:'mantis-shrimp',name:'Mantis Shrimp',emoji:'🦐',kicker:'Field notes · Crustacean',
+   lede:"A thumb-sized reef brawler that punches like a bullet and sees colors we can’t even imagine.",
+   facts:[
+     {tag:'Punch',h:'A punch fast as a bullet',p:'The mantis shrimp’s club-like arms strike at the speed of a .22 bullet — fast enough to smash crab shells and even aquarium glass.'},
+     {tag:'Bubble',h:'It boils water by punching',p:'The strike is so fast it creates tiny boiling bubbles that collapse with a flash of light and heat, hitting prey twice in one punch.'},
+     {tag:'Vision',h:'Up to 16 color receptors',p:'Humans see color with 3 receptor types. Mantis shrimp have up to 16, plus the ability to see ultraviolet and polarized light.'},
+     {tag:'Eyes',h:'Each eye moves alone',p:'Their stalked eyes swivel independently and each one can judge distance on its own — built-in 3D vision in every eyeball.'},
+     {tag:'Color',h:'A rainbow of armor',p:'Mantis shrimp come in dazzling neon greens, reds, and blues, making them one of the most colorful animals on the reef.'},
+     {tag:'Strong arm',h:'Nature’s toughest hammer',p:'The club is so durable that engineers study its structure to design stronger body armor and aircraft materials.'}
+   ]},
+  {id:'wolf',name:'Wolf',emoji:'🐺',kicker:'Field notes · Mammal',
+   lede:"The original pack leader and ancestor of every dog — a long-distance hunter that runs the wild on teamwork.",
+   facts:[
+     {tag:'Family',h:'Every dog descends from wolves',p:'From chihuahuas to Great Danes, all domestic dogs trace back to grey wolves that began bonding with humans tens of thousands of years ago.'},
+     {tag:'Pack',h:'A pack is really a family',p:'Wild wolf packs are usually a parent pair and their pups — the "alpha" fighting-for-dominance idea is mostly a myth from captive wolves.'},
+     {tag:'Howl',h:'A howl carries for miles',p:'Wolves howl to rally the pack, mark territory, and locate each other — a single howl can travel up to 10 km across open land.'},
+     {tag:'Endurance',h:'Marathon hunters',p:'Wolves can trot for hours and cover 50+ km a day, wearing prey down by stamina rather than pure speed.'},
+     {tag:'Smell',h:'A nose 100x sharper than ours',p:'A wolf’s sense of smell is roughly 100 times stronger than a human’s, able to detect prey over 2 km away.'},
+     {tag:'Ecosystem',h:'They reshape whole landscapes',p:'When wolves returned to Yellowstone, they changed deer behaviour, let forests regrow, and even shifted the paths of rivers.'}
+   ]}
+];
+
+const hexSVG='<svg class="hex" viewBox="0 0 100 100"><polygon points="50,3 93,27 93,73 50,97 7,73 7,27" fill="none" stroke="#5fa77d" stroke-width="4"/></svg>';
+const scutesBG='<svg class="band-scutes" preserveAspectRatio="xMidYMid slice" viewBox="0 0 800 800" aria-hidden="true"><rect width="800" height="800" fill="url(#scute)"/></svg>';
+const navList=document.getElementById('navList');
+const sectionsRoot=document.getElementById('animalSections');
+
+ANIMALS.forEach((a,i)=>{
+  const link=document.createElement('a');
+  link.className='nav-link';
+  link.href='#'+a.id;
+  link.dataset.target=a.id;
+  link.innerHTML='<span class="emoji">'+a.emoji+'</span> '+a.name;
+  navList.appendChild(link);
+
+  const sec=document.createElement('section');
+  sec.id=a.id;
+  sec.className='band '+(i%2===0?'band-a':'band-b');
+  let factsHTML='';
+  a.facts.forEach(f=>{
+    factsHTML+='<article class="fact">'+hexSVG+'<span class="tag">'+f.tag+'</span><h3>'+f.h+'</h3><p>'+f.p+'</p></article>';
+  });
+  sec.innerHTML=
+    scutesBG+
+    '<div class="wrap">'+
+      '<div class="animal-head">'+
+        '<span class="animal-emoji">'+a.emoji+'</span>'+
+        '<div><span class="section-kicker">'+a.kicker+'</span>'+
+        '<h2 class="section-title">'+a.name+'</h2></div>'+
+      '</div>'+
+      '<p class="lede">'+a.lede+'</p>'+
+      '<div class="facts">'+factsHTML+'</div>'+
+    '</div>';
+  sectionsRoot.appendChild(sec);
+});
+
+const sidebar=document.getElementById('sidebar');
+const scrim=document.getElementById('scrim');
+const menuBtn=document.getElementById('menuBtn');
+function openSidebar(){sidebar.classList.add('open');scrim.classList.add('show');}
+function closeSidebar(){sidebar.classList.remove('open');scrim.classList.remove('show');}
+menuBtn.addEventListener('click',openSidebar);
+scrim.addEventListener('click',closeSidebar);
+document.getElementById('openMenuLink').addEventListener('click',e=>{
+  if(window.innerWidth<=900){e.preventDefault();openSidebar();}
+});
+document.querySelectorAll('.nav-link').forEach(l=>{
+  l.addEventListener('click',()=>{ if(window.innerWidth<=900) closeSidebar(); });
+});
+document.querySelector('.nav-link[data-target="hero"]').addEventListener('click',e=>{
+  e.preventDefault();window.scrollTo({top:0,behavior:'smooth'});
+});
+
+const links=document.querySelectorAll('.nav-link');
+const targets=[document.getElementById('hero'),document.getElementById('about'),...ANIMALS.map(a=>document.getElementById(a.id))];
+const obs=new IntersectionObserver(entries=>{
+  entries.forEach(en=>{
+    if(en.isIntersecting){
+      links.forEach(l=>l.classList.toggle('active',l.dataset.target===en.target.id));
+    }
+  });
+},{rootMargin:'-45% 0px -50% 0px'});
+targets.forEach(t=>obs.observe(t));
+</script>
+</body>
+</html>
