@@ -6,7 +6,7 @@ Tortuga shares the wild, weird, true facts about animals — from sea turtles ol
 
 ## About
 
-A single-page interactive field guide featuring 40 animals, each with a set of strange-but-true facts, plus an "About Us" note and a "Save the Planet" section. Animals are listed alphabetically in the sidebar.
+A single-page interactive field guide featuring 209 animals, each with a set of strange-but-true facts. It also includes an "About Us" note, a "Save the Planet" section, and **Critter Café** — an interactive in-page game. Animals are listed alphabetically in the sidebar.
 
 ## Tech
 
